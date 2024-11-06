@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 import csv
 from fer import FER  # Librería para reconocimiento de emociones
+import pandas as pd # Librería para manejo de datos
 
 # Ruta a la carpeta con imágenes de clientes
 ruta_clientes = 'Clientes_Imagenes'
@@ -185,20 +186,72 @@ def registrar_nuevo_cliente():
     else:
         print("No se pudieron tomar las fotos necesarias.")
 
+# Función para ver el historial de asistencia de un cliente
+def ver_historial_cliente():
+    nombre_cliente = input("Ingrese el nombre del cliente: ").strip().upper()
+    try:
+        # Cargar el archivo CSV de asistencias
+        df = pd.read_csv('Asistencias.csv', names=['Nombre', 'Fecha y Hora', 'Emocion'])
+        # Filtrar las asistencias por el nombre del cliente
+        historial = df[df['Nombre'] == nombre_cliente]
+        if historial.empty:
+            print(f"No se encontraron asistencias para el cliente: {nombre_cliente}.")
+        else:
+            print(f"\nHistorial de asistencias para {nombre_cliente}:")
+            print(historial.to_string(index=False))
+    except FileNotFoundError:
+        print("Error: No se encontró el archivo de asistencias.")
+    except Exception as e:
+        print(f"Ocurrió un error al obtener el historial: {e}")
+
+# Función para analizar la frecuencia de asistencia de un cliente
+def analizar_frecuencia_asistencia():
+    nombre_cliente = input("Ingrese el nombre del cliente para análisis de frecuencia: ").strip().upper()
+    try:
+        # Cargar el archivo CSV de asistencias
+        df = pd.read_csv('Asistencias.csv', names=['Nombre', 'Fecha y Hora', 'Emocion'])
+        # Filtrar las asistencias por el nombre del cliente
+        historial = df[df['Nombre'] == nombre_cliente]
+        if historial.empty:
+            print(f"No se encontraron asistencias para el cliente: {nombre_cliente}.")
+            return
+
+        # Convertir la columna de fecha y hora a formato datetime
+        historial['Fecha y Hora'] = pd.to_datetime(historial['Fecha y Hora'])
+
+        # Calcular frecuencia semanal y mensual
+        frecuencia_semanal = historial['Fecha y Hora'].dt.isocalendar().week.value_counts().mean()
+        frecuencia_mensual = historial['Fecha y Hora'].dt.month.value_counts().mean()
+
+        print(f"\nFrecuencia de asistencia para {nombre_cliente}:")
+        print(f"Promedio semanal: {frecuencia_semanal:.2f} veces por semana.")
+        print(f"Promedio mensual: {frecuencia_mensual:.2f} veces por mes.")
+        
+    except FileNotFoundError:
+        print("Error: No se encontró el archivo de asistencias.")
+    except Exception as e:
+        print(f"Ocurrió un error al analizar la frecuencia: {e}")
+
 # Menú principal
 def menu_principal():
     while True:
-        print("\nBienvenido al Sistema de Asistencias")
+        print("\n.:Bienvenido al Sistema de Asistencias:.")
         print("Seleccione una opción:")
         print("1. Registrar Asistencia")
         print("2. Registrar Nuevo Cliente")
-        print("3. Salir")
-        opcion = input("Opción (1/2/3): ").strip()
+        print("3. Ver Historial de Cliente")
+        print("4. Analizar Frecuencia de Asistencia de Cliente")
+        print("5. Salir")
+        opcion = input("Opción (1/2/3/4/5): ").strip()
         if opcion == '1':
             registrar_asistencias()
         elif opcion == '2':
             registrar_nuevo_cliente()
         elif opcion == '3':
+            ver_historial_cliente()
+        elif opcion == '4':
+            analizar_frecuencia_asistencia()
+        elif opcion == '5':
             print("Gracias por utilizar el sistema.")
             break
         else:

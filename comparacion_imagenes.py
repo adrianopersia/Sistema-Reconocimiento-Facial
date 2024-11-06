@@ -1,34 +1,44 @@
 import cv2
 import face_recognition as fr
 
-# Cargar las imágenes
-imagen_control = fr.load_image_file('Cliente_Control.jpg')
-imagen_prueba = fr.load_image_file('Cliente_Prueba.jpg')
+# Función para cargar y procesar una imagen
+def cargar_y_procesar_imagen(ruta):
+    imagen = fr.load_image_file(ruta)
+    imagen = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+    ubicaciones = fr.face_locations(imagen)
+    codificaciones = fr.face_encodings(imagen, ubicaciones)
+    return imagen, ubicaciones, codificaciones
 
-# Convertir las imágenes de BGR a RGB
-imagen_control = cv2.cvtColor(imagen_control, cv2.COLOR_BGR2RGB)
-imagen_prueba = cv2.cvtColor(imagen_prueba, cv2.COLOR_BGR2RGB)
+# Cargar y procesar ambas imágenes 
+imagen_control, loc_control, enc_control = cargar_y_procesar_imagen(r'C:\Users\matie\dev\sistema-de-reconocimiento-facial\Sistema-Reconocimiento-Facial\Cliente_Control.jpg')
+# imagen_prueba, loc_prueba, enc_prueba = cargar_y_procesar_imagen(r'C:\Users\matie\dev\sistema-de-reconocimiento-facial\Sistema-Reconocimiento-Facial\Cliente_Prueba.jpg')
+# imagen_prueba, loc_prueba, enc_prueba = cargar_y_procesar_imagen(r'C:\Users\matie\dev\sistema-de-reconocimiento-facial\Sistema-Reconocimiento-Facial\Clientes_Prueba.jpg')
+imagen_prueba, loc_prueba, enc_prueba = cargar_y_procesar_imagen(r'C:\Users\matie\dev\sistema-de-reconocimiento-facial\Sistema-Reconocimiento-Facial\Clientes_PruebaG.jpg')
 
-# Localizar los rostros en las imágenes
-loc_control = fr.face_locations(imagen_control)[0]
-loc_prueba = fr.face_locations(imagen_prueba)[0]
+# Iterar sobre cada rostro en la imagen de control y lo compara con cada rostro en la imagen de prueba
+umbral = 0.6  # Umbral de similitud
+for i, (ubicacion_control, cod_control) in enumerate(zip(loc_control, enc_control)):
+    for j, (ubicacion_prueba, cod_prueba) in enumerate(zip(loc_prueba, enc_prueba)):
+        resultado = fr.compare_faces([cod_control], cod_prueba, tolerance=umbral)
+        distancia = fr.face_distance([cod_control], cod_prueba)
+        
+        # Mostrar resultados
+        print(f"Comparación rostro {i+1} de la imagen de control con rostro {j+1} de la imagen de prueba:")
+        print(f"¿Es la misma persona? {'Sí' if resultado[0] else 'No'}")
+        print(f"Distancia de similitud: {distancia[0]:.2f}")
+        
+        # Añadir resultados y rectángulos
+        cv2.rectangle(imagen_control, (ubicacion_control[3], ubicacion_control[0]), (ubicacion_control[1], ubicacion_control[2]), (0, 255, 0), 2)
+        cv2.rectangle(imagen_prueba, (ubicacion_prueba[3], ubicacion_prueba[0]), (ubicacion_prueba[1], ubicacion_prueba[2]), (0, 255, 0), 2)
+        cv2.putText(imagen_prueba,
+                    f"Rostro {i+1} - {('Similitud' if resultado[0] else 'Diferente')} ({distancia[0]:.2f})",
+                    (ubicacion_prueba[3], ubicacion_prueba[0] - 10),
+                    cv2.FONT_HERSHEY_COMPLEX,
+                    0.5,
+                    (0, 255, 0) if resultado[0] else (0, 0, 255),
+                    1)
 
-# Codificar las características faciales
-enc_control = fr.face_encodings(imagen_control)[0]
-enc_prueba = fr.face_encodings(imagen_prueba)[0]
-
-# Comparar los rostros
-resultado = fr.compare_faces([enc_control], enc_prueba)
-distancia = fr.face_distance([enc_control], enc_prueba)
-
-# Mostrar resultados
-print(f"¿Es la misma persona? {resultado[0]}")
-print(f"Distancia de similitud: {distancia[0]}")
-
-# Mostrar las imágenes con rectángulos alrededor del rostro
-cv2.rectangle(imagen_control, (loc_control[3], loc_control[0]), (loc_control[1], loc_control[2]), (0,255,0), 2)
-cv2.rectangle(imagen_prueba, (loc_prueba[3], loc_prueba[0]), (loc_prueba[1], loc_prueba[2]), (0,255,0), 2)
-
+# Mostrar las img
 cv2.imshow('Imagen de Control', imagen_control)
 cv2.imshow('Imagen de Prueba', imagen_prueba)
 cv2.waitKey(0)
