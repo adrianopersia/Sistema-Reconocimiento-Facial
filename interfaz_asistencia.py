@@ -6,6 +6,10 @@ from tkinter import ttk
 import csv
 from tkinter import messagebox
 import os
+from ttkthemes import ThemedTk
+
+# style = ttk.Style()
+# style.theme_use("clam")
 
 class SistemaAsistenciaGimnasio:
     def __init__(self, root, nombres_clientes):
@@ -20,26 +24,26 @@ class SistemaAsistenciaGimnasio:
                 writer.writerow(["Nombre"])  # Escribe el encabezado en el archivo
 
         # Agregar un título en la ventana principal
-        self.titulo = tk.Label(self.root, text="Sistema de Reconocimiento Facial", font=("Arial", 16, "bold"))
+        self.titulo = ttk.Label(self.root, text="Sistema de Reconocimiento Facial", font=("Arial", 16, "bold"))
         self.titulo.pack(pady=20)
 
-        self.label_mensaje = tk.Label(self.root, text="")
+        self.label_mensaje = ttk.Label(self.root, text="")
         self.label_mensaje.pack(pady=10)
 
         # Botones de la interfaz
-        btn_asistencia = tk.Button(self.root, text="Registrar asistencia", command=self.registrar_asistencia_y_mensaje)
+        btn_asistencia = ttk.Button(self.root, text="Registrar asistencia", command=self.registrar_asistencia_y_mensaje)
         btn_asistencia.pack(pady=10)
         
-        btn_nuevo_usuario = tk.Button(self.root, text="Registrar un nuevo usuario", command=self.abrir_ventana_nuevo_usuario)
+        btn_nuevo_usuario = ttk.Button(self.root, text="Registrar un nuevo usuario", command=self.abrir_ventana_nuevo_usuario)
         btn_nuevo_usuario.pack(pady=10)
 
-        btn_ver_asistencias = tk.Button(self.root, text="Ver registro de asistencias", command=self.ver_asistencias)
+        btn_ver_asistencias = ttk.Button(self.root, text="Ver registro de asistencias", command=self.ver_asistencias)
         btn_ver_asistencias.pack(pady=10)
 
-        btn_ver_usuarios = tk.Button(self.root, text="Ver usuarios", command=self.ver_usuarios)
+        btn_ver_usuarios = ttk.Button(self.root, text="Ver usuarios", command=self.ver_usuarios)
         btn_ver_usuarios.pack(pady=10)
 
-        btn_cerrar = tk.Button(self.root, text="Cerrar", command=self.root.quit)
+        btn_cerrar = ttk.Button(self.root, text="Cerrar", command=self.root.quit)
         btn_cerrar.pack(pady=10)
     
     def registrar_asistencia_y_mensaje(self):
@@ -48,8 +52,11 @@ class SistemaAsistenciaGimnasio:
         print(usuario)
         if usuario:
             mensaje = f"Asistencia registrada correctamente - Puede ingresar al gimnasio."
+            messagebox.showinfo("Éxito", "Asistencia registrada correctamente - Puede ingresar al gimnasio.")
         else:
             mensaje = "Error al registrar la asistencia."
+            messagebox.showinfo("Error", "Error al registrar la asistencia.")
+
 
         # Actualiza el label en la ventana principal
         self.label_mensaje.config(text=mensaje)
@@ -59,10 +66,10 @@ class SistemaAsistenciaGimnasio:
         ventana.title("Registrar nuevo usuario")
         ventana.geometry("300x200")
         
-        label_nombre = tk.Label(ventana, text="Ingrese el nombre del nuevo usuario:")
+        label_nombre = ttk.Label(ventana, text="Ingrese el nombre del nuevo usuario:")
         label_nombre.pack(pady=10)
 
-        entry_nombre = tk.Entry(ventana)
+        entry_nombre = ttk.Entry(ventana)
         entry_nombre.pack(pady=5)
 
         def confirmar_registro():
@@ -75,7 +82,7 @@ class SistemaAsistenciaGimnasio:
                 messagebox.showinfo("Información", resultado)  # Mensaje de éxito o error específico
             ventana.destroy()
 
-        btn_confirmar = tk.Button(ventana, text="Confirmar", command=confirmar_registro)
+        btn_confirmar = ttk.Button(ventana, text="Confirmar", command=confirmar_registro)
         btn_confirmar.pack(pady=10)
 
     def ver_asistencias(self):
@@ -115,10 +122,10 @@ class SistemaAsistenciaGimnasio:
         actualizar_registro()
 
         # Botones para limpiar o actualizar el registro de asistencias
-        btn_limpiar = tk.Button(ventana_asistencias, text="Limpiar Registro de Asistencias", command=self.limpiar_asistencias)
+        btn_limpiar = ttk.Button(ventana_asistencias, text="Limpiar Registro de Asistencias", command=self.limpiar_asistencias)
         btn_limpiar.pack(pady=5)
 
-        btn_actualizar = tk.Button(ventana_asistencias, text="Actualizar registro", command=actualizar_registro)
+        btn_actualizar = ttk.Button(ventana_asistencias, text="Actualizar registro", command=actualizar_registro)
         btn_actualizar.pack(pady=5)
 
     def limpiar_asistencias(self):
@@ -135,7 +142,7 @@ class SistemaAsistenciaGimnasio:
         ventana_usuarios.geometry("300x400")
 
         # Etiqueta de título
-        label = tk.Label(ventana_usuarios, text="Usuarios Registrados", font=("Arial", 14))
+        label = ttk.Label(ventana_usuarios, text="Usuarios Registrados", font=("Arial", 14))
         label.pack(pady=10)
 
         # Crear una lista en la ventana

@@ -8,7 +8,7 @@ from fer import FER  # Librería para reconocimiento de emociones
 import tkinter as tk
 from tkinter import messagebox
 from threading import Thread
-import math
+from ttkthemes import ThemedTk
 
 
 # Ruta a la carpeta con imágenes de clientes
@@ -104,9 +104,15 @@ def registrar_asistencias():
             y1, x2, y2, x1 = loc_rostro
             y1, x2, y2, x1 = y1*4, x2*4, y2*4, x1*4
 
-            if coincidencias[indice_mejor_coincidencia]:
-                nombre = nombres_clientes[round(indice_mejor_coincidencia/3)].upper()
+            # Calcular el índice del cliente
+            indice_cliente = indice_mejor_coincidencia // 3  # Dividimos entre 3 para obtener el índice del cliente
+
+            # Comprobamos que el índice no se pase del tamaño de la lista
+            if indice_cliente < len(nombres_clientes):
+                # Si hay coincidencia, usamos el índice del cliente y su nombre correspondiente
+                nombre = nombres_clientes[indice_cliente].upper()
             else:
+                # Si no hay coincidencia, se asigna 'Desconocido'
                 nombre = 'Desconocido'
 
             emocion_detectada = ''
@@ -244,32 +250,12 @@ if __name__ == "__main__":
     
     import tkinter as tk
     from tkinter import messagebox
-    from threading import Thread
     from interfaz_asistencia import SistemaAsistenciaGimnasio
 
     # Codificar las imágenes de los clientes al inicio
     codificaciones_conocidas = codificar_imagenes(imagenes)
     print('Codificaciones iniciales completadas.')
     # menu_principal()
-    root = tk.Tk()
+    root = ThemedTk(theme="arc")
     app = SistemaAsistenciaGimnasio(root, nombres_clientes)
     root.mainloop()
-
-# Menú principal
-# def menu_principal():
-#     while True:
-#         print("\nBienvenido al Sistema de Asistencias")
-#         print("Seleccione una opción:")
-#         print("1. Registrar Asistencia")
-#         print("2. Registrar Nuevo Cliente")
-#         print("3. Salir")
-#         opcion = input("Opción (1/2/3): ").strip()
-#         if opcion == '1':
-#             registrar_asistencias()
-#         elif opcion == '2':
-#             registrar_nuevo_cliente()
-#         elif opcion == '3':
-#             print("Gracias por utilizar el sistema.")
-#             break
-#         else:
-#             print("Opción inválida. Por favor, intente de nuevo.")
